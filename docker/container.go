@@ -27,7 +27,7 @@ type Container struct {
 func containerFromJSON(json types.ContainerJSON) *Container {
 	domainRaw, ok := json.Config.Labels[labelDomains]
 	if !ok {
-		return nil, nil
+		return nil
 	}
 	domains := []string{}
 	for _, d := range strings.Split(domainRaw, ",") {
@@ -35,7 +35,7 @@ func containerFromJSON(json types.ContainerJSON) *Container {
 	}
 	addr, ok := json.Config.Labels[labelAddr]
 	if !ok {
-		return nil, nil
+		return nil
 	}
 	return &Container{
 		ID:      json.ID,
