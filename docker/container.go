@@ -19,12 +19,14 @@ type Container struct {
 	Name    string
 	Domains []string
 	Addr    string
+	Status  string
+	Running bool
 }
 
 // containerFromJSON reads information from a container's labels and populates
 // a Container instance with the data. If the container does not contain the
 // requires labels, nil is returned.
-func containerFromJSON(json types.ContainerJSON) *Container {
+func containerFromJSON(json types.ContainerJSON, running bool) *Container {
 	domainRaw, ok := json.Config.Labels[labelDomains]
 	if !ok {
 		return nil
@@ -42,5 +44,6 @@ func containerFromJSON(json types.ContainerJSON) *Container {
 		Name:    json.Name,
 		Domains: domains,
 		Addr:    addr,
+		Running: running,
 	}
 }
