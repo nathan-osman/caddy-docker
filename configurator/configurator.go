@@ -8,7 +8,6 @@ import (
 	"github.com/nathan-osman/caddy-docker/container"
 	"github.com/sirupsen/logrus"
 
-	// TODO: is this still needed?
 	_ "github.com/mholt/caddy/caddyhttp"
 )
 
