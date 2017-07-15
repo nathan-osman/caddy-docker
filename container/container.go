@@ -19,7 +19,6 @@ type Container struct {
 	Name    string
 	Domains []string
 	Addr    string
-	Status  string
 	Running bool
 }
 
@@ -41,7 +40,7 @@ func New(json types.ContainerJSON, running bool) *Container {
 	}
 	return &Container{
 		ID:      json.ID,
-		Name:    json.Name,
+		Name:    json.Name[1:],
 		Domains: domains,
 		Addr:    addr,
 		Running: running,
