@@ -5,6 +5,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/events"
+	"github.com/nathan-osman/caddy-docker/container"
 )
 
 // processContainer inspects the specified container and sends on the event
@@ -14,7 +15,7 @@ func (m *Monitor) processContainer(ctx context.Context, id string, running bool)
 	if err != nil {
 		return err
 	}
-	if c := containerFromJSON(json, running); c != nil {
+	if c := container.New(json, running); c != nil {
 		m.events <- c
 	}
 	return nil

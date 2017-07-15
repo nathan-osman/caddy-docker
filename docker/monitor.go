@@ -7,6 +7,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
+	"github.com/nathan-osman/caddy-docker/container"
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,8 +15,7 @@ import (
 // started and stopped. The monitor sends on the Event channel when containers
 // with the appropriate labels are started and stopped.
 type Monitor struct {
-	Events <-chan *Container
-	events chan<- *Container
+	events chan<- *container.Container
 	client *client.Client
 	log    *logrus.Entry
 	stop   context.CancelFunc
@@ -71,17 +71,13 @@ func New(cfg *Config) (*Monitor, error) {
 		return nil, err
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	var (
-		events = make(chan *Container)
-		m      = &Monitor{
-			Events: events,
-			events: events,
-			client: c,
-			log:    logrus.WithField("context", "docker"),
-			stop:   cancel,
-			stopCh: make(chan bool),
-		}
-	)
+	m := &Monitor{
+		events: cfg.Events,
+		client: c,
+		log:    logrus.WithField("context", "docker"),
+		stop:   cancel,
+		stopCh: make(chan bool),
+	}
 	go m.run(ctx)
 	return m, nil
 }

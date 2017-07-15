@@ -1,4 +1,4 @@
-package docker
+package container
 
 import (
 	"strings"
@@ -23,10 +23,10 @@ type Container struct {
 	Running bool
 }
 
-// containerFromJSON reads information from a container's labels and populates
-// a Container instance with the data. If the container does not contain the
-// requires labels, nil is returned.
-func containerFromJSON(json types.ContainerJSON, running bool) *Container {
+// New reads information from a container's labels and populates a Container
+// instance with the data. If the container does not contain the requires
+// labels, nil is returned.
+func New(json types.ContainerJSON, running bool) *Container {
 	domainRaw, ok := json.Config.Labels[labelDomains]
 	if !ok {
 		return nil
