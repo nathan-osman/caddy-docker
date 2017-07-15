@@ -43,37 +43,33 @@ func (c *Configurator) run(events <-chan *container.Container) {
 			}
 			t = time.After(2 * time.Second)
 		case <-t:
-			c.generate(m)
+			if err := c.generate(m); err != nil {
+				c.log.Error(err)
+			}
 			t = nil
 		}
 	}
 }
 
 // New creates a new configurator from the specified configuration.
-func New(cfg *Config) (*Configurator, error) {
-	cdyfile, err := caddy.LoadCaddyfile("http")
-	if err != nil {
-		return nil, err
-	}
-	inst, err := caddy.Start(cdyfile)
-	if err != nil {
-		return nil, err
-	}
+func New(cfg *Config) *Configurator {
 	c := &Configurator{
-		inst:   inst,
 		log:    logrus.WithField("context", "configurator"),
 		stopCh: make(chan bool),
 	}
 	go c.run(cfg.Events)
-	return c, nil
+	return c
 }
 
 // Close shuts down the configurator.
 func (c *Configurator) Close() {
+	<-c.stopCh
 	func() {
 		c.mutex.Lock()
 		defer c.mutex.Unlock()
-		c.inst.Stop()
+		if c.inst != nil {
+			c.log.Info("stopping server")
+			c.inst.Stop()
+		}
 	}()
-	<-c.stopCh
 }
