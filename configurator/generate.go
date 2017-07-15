@@ -2,7 +2,6 @@ package configurator
 
 import (
 	"bytes"
-	"fmt"
 	"strings"
 	"text/template"
 
@@ -16,11 +15,7 @@ func init() {
 	tmpl = template.New("caddy")
 	tmpl.Funcs(map[string]interface{}{
 		"join": func(list []string) string {
-			r := make([]string, len(list))
-			for i, v := range list {
-				r[i] = fmt.Sprintf("https://%s", v)
-			}
-			return strings.Join(r, ", ")
+			return strings.Join(list, ", ")
 		},
 	})
 	template.Must(tmpl.Parse(
