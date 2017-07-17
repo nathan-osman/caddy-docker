@@ -6,6 +6,7 @@ import (
 	"syscall"
 
 	"github.com/mholt/caddy"
+	"github.com/mholt/caddy/caddytls"
 	"github.com/nathan-osman/caddy-docker/configurator"
 	"github.com/nathan-osman/caddy-docker/container"
 	"github.com/nathan-osman/caddy-docker/docker"
@@ -13,16 +14,16 @@ import (
 	"github.com/urfave/cli"
 )
 
-func init() {
-	caddy.AppName = "caddy-docker"
-	caddy.AppVersion = "0.1"
-}
-
 func main() {
 	app := cli.NewApp()
 	app.Name = "caddy-docker"
 	app.Usage = "sync Caddy config with running Docker containers"
 	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:   "acme-email",
+			Usage:  "account email for Let's Encrypt",
+			EnvVar: "ACME_EMAIL",
+		},
 		cli.BoolFlag{
 			Name:   "debug",
 			Usage:  "enable debug output",
@@ -36,6 +37,11 @@ func main() {
 		},
 	}
 	app.Action = func(c *cli.Context) {
+		caddy.AppName = "caddy-docker"
+		caddy.AppVersion = "0.1"
+		caddytls.Agreed = true
+		caddytls.DefaultCAUrl = "https://acme-v01.api.letsencrypt.org/directory"
+		caddytls.DefaultEmail = c.String("acme-email")
 		log := logrus.WithField("context", "main")
 		if c.Bool("debug") {
 			logrus.SetLevel(logrus.DebugLevel)
@@ -48,7 +54,7 @@ func main() {
 		)
 		defer conf.Close()
 		docker, err := docker.New(&docker.Config{
-			Host:   "unix:///var/run/docker.sock",
+			Host:   c.String("docker-host"),
 			Events: events,
 		})
 		if err != nil {
