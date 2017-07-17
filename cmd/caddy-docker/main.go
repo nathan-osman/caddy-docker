@@ -40,7 +40,7 @@ func main() {
 			Name:   "server-addr",
 			Usage:  "address for the HTTP server",
 			EnvVar: "SERVER_ADDR",
-			Value:  "127.0.0.1:8000",
+			Value:  ":8000",
 		},
 		cli.StringFlag{
 			Name:   "server-username",

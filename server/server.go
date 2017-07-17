@@ -37,6 +37,7 @@ func New(cfg *Config) (*Server, error) {
 		}
 	)
 	srv.Handler = s
+	router.PathPrefix("/static").Handler(http.FileServer(HTTP))
 	go func() {
 		defer close(s.stopped)
 		defer s.log.Info("HTTP server has stopped")
