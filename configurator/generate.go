@@ -23,7 +23,14 @@ func init() {
 {{range $c := .}}
 # {{$c.Name}}
 {{$c.Domains|join}} {
-    proxy / {{$c.Addr}}
+    proxy / {{$c.Addr}} {
+        header_upstream Host {host}
+        header_upstream X-Real-IP {remote}
+        header_upstream X-Forwarded-For {remote}
+        header_upstream X-Forwarded-Proto {scheme}
+        header_upstream Connection {>Connection}
+        header_upstream Upgrade {>Upgrade}
+    }
 }
 {{end}}
 `,
