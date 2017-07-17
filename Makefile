@@ -7,7 +7,7 @@ BINDATA = $(shell find server/static)
 
 all: dist/${CMD}
 
-dist/${CMD}: cache dist ${SOURCES} server/ab0x.go
+dist/${CMD}: ${SOURCES} server/ab0x.go | cache dist
 	docker run \
 	    --rm \
 	    -e CGO_ENABLED=0 \
@@ -24,10 +24,10 @@ cache:
 dist:
 	@mkdir dist
 
-server/ab0x.go: dist/fileb0x
+server/ab0x.go: ${BINDATA} | dist/fileb0x
 	dist/fileb0x b0x.yaml
 
-dist/fileb0x: dist
+dist/fileb0x: | dist
 	docker run \
 	    --rm \
 	    -e CGO_ENABLED=0 \
