@@ -10,6 +10,7 @@ import (
 	"github.com/nathan-osman/caddy-docker/configurator"
 	"github.com/nathan-osman/caddy-docker/container"
 	"github.com/nathan-osman/caddy-docker/docker"
+	"github.com/nathan-osman/caddy-docker/server"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )
@@ -35,17 +36,39 @@ func main() {
 			EnvVar: "DOCKER_HOST",
 			Value:  "unix:///var/run/docker.sock",
 		},
+		cli.StringFlag{
+			Name:   "server-addr",
+			Usage:  "address for the HTTP server",
+			EnvVar: "SERVER_ADDR",
+			Value:  "127.0.0.1:8000",
+		},
+		cli.StringFlag{
+			Name:   "server-username",
+			Usage:  "username for the HTTP server",
+			EnvVar: "SERVER_USERNAME",
+		},
+		cli.StringFlag{
+			Name:   "server-password",
+			Usage:  "password for the HTTP server",
+			EnvVar: "SERVER_PASSWORD",
+		},
 	}
 	app.Action = func(c *cli.Context) {
+
+		// Set up Caddy
 		caddy.AppName = "caddy-docker"
 		caddy.AppVersion = "0.1"
 		caddytls.Agreed = true
 		caddytls.DefaultCAUrl = "https://acme-v01.api.letsencrypt.org/directory"
 		caddytls.DefaultEmail = c.String("acme-email")
+
+		// Configure logging
 		log := logrus.WithField("context", "main")
 		if c.Bool("debug") {
 			logrus.SetLevel(logrus.DebugLevel)
 		}
+
+		// Create the configurator
 		var (
 			events = make(chan *container.Container)
 			conf   = configurator.New(&configurator.Config{
@@ -53,6 +76,8 @@ func main() {
 			})
 		)
 		defer conf.Close()
+
+		// Create the connection to Docker
 		docker, err := docker.New(&docker.Config{
 			Host:   c.String("docker-host"),
 			Events: events,
@@ -62,6 +87,20 @@ func main() {
 			return
 		}
 		defer docker.Close()
+
+		// Create the application server
+		srv, err := server.New(&server.Config{
+			Addr:     c.String("server-addr"),
+			Username: c.String("server-username"),
+			Password: c.String("server-password"),
+		})
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		defer srv.Close()
+
+		// Wait for SIGINT or SIGTERM
 		sigChan := make(chan os.Signal)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 		<-sigChan
