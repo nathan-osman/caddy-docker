@@ -14,4 +14,4 @@ VOLUME /var/lib/caddy-docker
 ENV CADDYPATH=/var/lib/caddy-docker
 
 # No arguments are needed for running the app
-CMD "/usr/local/bin/caddy-docker"
+ENTRYPOINT ["/usr/local/bin/caddy-docker"]
