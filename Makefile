@@ -13,13 +13,22 @@ all: dist/${CMD}
 dist/${CMD}: ${SOURCES} server/ab0x.go | cache dist
 	docker run \
 	    --rm \
+	    -e UID=${UID} \
+	    -e GID=${GID} \
+	    -v ${CWD}/cache:/go/src \
+	    -v ${CWD}:/go/src/${PKG} \
+	    -w /go/src/${PKG} \
+	    nathanosman/bettergo \
+	    go get -d ./...
+	docker run \
+	    --rm \
 	    -e CGO_ENABLED=0 \
+	    -e UID=${UID} \
+	    -e GID=${GID} \
 	    -v ${CWD}/cache:/go/src \
 	    -v ${CWD}/dist:/go/bin \
 	    -v ${CWD}:/go/src/${PKG} \
 	    -w /go/bin \
-	    -e UID=${UID} \
-	    -e GID=${GID} \
 	    nathanosman/bettergo \
 	    go build ${PKG}/cmd/${CMD}
 
@@ -35,12 +44,19 @@ server/ab0x.go: ${BINDATA} | dist/fileb0x
 dist/fileb0x: | dist
 	docker run \
 	    --rm \
+	    -e UID=${UID} \
+	    -e GID=${GID} \
+	    -v ${CWD}/cache:/go/src \
+	    nathanosman/bettergo \
+	    go get -d github.com/UnnoTed/fileb0x
+	docker run \
+	    --rm \
 	    -e CGO_ENABLED=0 \
+	    -e UID=${UID} \
+	    -e GID=${GID} \
 	    -v ${CWD}/cache:/go/src \
 	    -v ${CWD}/dist:/go/bin \
 	    -w /go/bin \
-	    -e UID=${UID} \
-	    -e GID=${GID} \
 	    nathanosman/bettergo \
 	    go build github.com/UnnoTed/fileb0x
 
