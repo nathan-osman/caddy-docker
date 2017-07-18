@@ -19,7 +19,7 @@ dist/${CMD}: ${SOURCES} server/ab0x.go | cache dist
 	    -v ${CWD}:/go/src/${PKG} \
 	    -w /go/src/${PKG} \
 	    nathanosman/bettergo \
-	    go get -d ./...
+	    go get -d ${PKG}/cmd/${CMD}
 	docker run \
 	    --rm \
 	    -e CGO_ENABLED=0 \
