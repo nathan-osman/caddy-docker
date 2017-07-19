@@ -5,17 +5,19 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/nathan-osman/caddy-docker/configurator"
 	"github.com/sirupsen/logrus"
 )
 
 // Server provides a web interface for interacting with the application.
 type Server struct {
-	username string
-	password string
-	router   *mux.Router
-	listener net.Listener
-	log      *logrus.Entry
-	stopped  chan bool
+	username     string
+	password     string
+	configurator *configurator.Configurator
+	router       *mux.Router
+	listener     net.Listener
+	log          *logrus.Entry
+	stopped      chan bool
 }
 
 // New creates a new server.
@@ -28,16 +30,18 @@ func New(cfg *Config) (*Server, error) {
 		srv    = http.Server{}
 		router = mux.NewRouter()
 		s      = &Server{
-			username: cfg.Username,
-			password: cfg.Password,
-			router:   router,
-			listener: l,
-			log:      logrus.WithField("context", "server"),
-			stopped:  make(chan bool),
+			username:     cfg.Username,
+			password:     cfg.Password,
+			configurator: cfg.Configurator,
+			router:       router,
+			listener:     l,
+			log:          logrus.WithField("context", "server"),
+			stopped:      make(chan bool),
 		}
 	)
 	srv.Handler = s
 	router.HandleFunc("/", s.index)
+	router.HandleFunc("/api", s.api)
 	router.PathPrefix("/static").Handler(http.FileServer(HTTP))
 	go func() {
 		defer close(s.stopped)

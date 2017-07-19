@@ -90,9 +90,10 @@ func main() {
 
 		// Create the application server
 		srv, err := server.New(&server.Config{
-			Addr:     c.String("server-addr"),
-			Username: c.String("server-username"),
-			Password: c.String("server-password"),
+			Addr:         c.String("server-addr"),
+			Username:     c.String("server-username"),
+			Password:     c.String("server-password"),
+			Configurator: conf,
 		})
 		if err != nil {
 			log.Error(err)

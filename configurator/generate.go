@@ -6,7 +6,6 @@ import (
 	"text/template"
 
 	"github.com/mholt/caddy"
-	"github.com/nathan-osman/caddy-docker/container"
 )
 
 var tmpl *template.Template
@@ -38,10 +37,18 @@ func init() {
 }
 
 // generate enumerates all of the containers and builds a configuration file.
-func (c *Configurator) generate(m map[string]*container.Container) error {
+func (c *Configurator) generate() error {
 	c.log.Info("generating new configuration")
 	w := bytes.NewBuffer(nil)
-	if err := tmpl.ExecuteTemplate(w, "caddy", m); err != nil {
+	err := func() error {
+		c.mutex.Lock()
+		defer c.mutex.Unlock()
+		if err := tmpl.ExecuteTemplate(w, "caddy", c.containers); err != nil {
+			return err
+		}
+		return nil
+	}()
+	if err != nil {
 		return err
 	}
 	cdyfile := &caddy.CaddyfileInput{

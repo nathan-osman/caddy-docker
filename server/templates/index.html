@@ -3,8 +3,31 @@
 {% block content %}
     <div class="grid-container">
         <div class="grid-x grid-padding-x">
-        <div class="large-12 cell">
-            <h1>caddy-docker</h1>
+            <div class="large-12 cell">
+                <h1>
+                    caddy-docker
+                </h1>
+                <hr>
+                <p>
+                    The table below shows all of the currently running containers with caddy labels:
+                </p>
+                <table id="containers">
+                    <thead>
+                        <tr>
+                            <td>Service</td>
+                            <td>Domains</td>
+                            <td>Address</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- populated by script -->
+                    </tbody>
+                </table>
+                <hr>
+                <p>
+                    Copyright 2017 &mdash; Nathan Osman
+                </p>
+            </div>
         </div>
     </div>
 {% endblock %}
