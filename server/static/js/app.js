@@ -54,10 +54,11 @@
             // Add the containers to the list
             var $tbody = $('#containers tbody').empty();
             $.each(d, function() {
-                var $btns = $('<div>')
+                var id = this.id,
+                    $btns = $('<div>')
                         .addClass('right')
                         .append($('<button>').click(function() {
-                            restartContainer(d.ID);
+                            restartContainer(id);
                         }));
                 $('<tr>')
                     .append(td(this.Name))
