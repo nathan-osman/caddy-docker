@@ -32,7 +32,11 @@
             id: id
         };
         $.post('/api', d, function(d) {
-            // TODO: error handling
+            if ('error' in d) {
+                // TODO: error handling
+            } else {
+                reloadContainers();
+            }
         });
     }
 
@@ -62,9 +66,13 @@
                     $btns = $('<div>')
                         .addClass('right')
                         .append($('<button>')
+                            .addClass('button')
                             .attr('type', 'button')
                             .text("Restart")
                             .click(function() {
+                                $(this).replaceWith($('<img>')
+                                    .attr('src', '/static/img/spinner.gif')
+                                );
                                 restartContainer(id);
                             })
                         );
