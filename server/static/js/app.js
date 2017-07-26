@@ -9,10 +9,27 @@
      * Create a <td> element
      */
     function td(t) {
-        if ($.isArray(t)) {
-            t = t.join(', ');
+        var isString = $.type(t) === 'string',
+            isArray = $.isArray(t),
+            $e;
+        if (isString || isArray) {
+            if (isArray) {
+                t = t.join(', ');
+            }
+            $e = $('<span>').text(t);
+        } else {
+            $e = t;
         }
-        return $('<td>').text(t);
+        return $('<td>').append($e);
+    }
+
+    /**
+     * Restart the specified container
+     */
+    function restartContainer(id) {
+        $.post('/api', {action: 'restartContainer', id: id}, function(d) {
+            // TODO: error handling
+        });
     }
 
     /**
@@ -37,10 +54,16 @@
             // Add the containers to the list
             var $tbody = $('#containers tbody').empty();
             $.each(d, function() {
+                var $btns = $('<div>')
+                        .addClass('right')
+                        .append($('<button>').click(function() {
+                            restartContainer(d.ID);
+                        }));
                 $('<tr>')
                     .append(td(this.Name))
                     .append(td(this.Domains))
                     .append(td(this.Addr))
+                    .append(td($btns))
                     .appendTo($tbody);
             });
         });
