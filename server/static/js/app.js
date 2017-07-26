@@ -27,7 +27,11 @@
      * Restart the specified container
      */
     function restartContainer(id) {
-        $.post('/api', {action: 'restartContainer', id: id}, function(d) {
+        var d = {
+            action: 'restartContainer',
+            id: id
+        };
+        $.post('/api', d, function(d) {
             // TODO: error handling
         });
     }
@@ -54,12 +58,16 @@
             // Add the containers to the list
             var $tbody = $('#containers tbody').empty();
             $.each(d, function() {
-                var id = this.id,
+                var id = this.ID,
                     $btns = $('<div>')
                         .addClass('right')
-                        .append($('<button>').click(function() {
-                            restartContainer(id);
-                        }));
+                        .append($('<button>')
+                            .attr('type', 'button')
+                            .text("Restart")
+                            .click(function() {
+                                restartContainer(id);
+                            })
+                        );
                 $('<tr>')
                     .append(td(this.Name))
                     .append(td(this.Domains))
