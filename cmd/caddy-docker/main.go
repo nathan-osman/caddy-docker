@@ -94,6 +94,7 @@ func main() {
 			Username:     c.String("server-username"),
 			Password:     c.String("server-password"),
 			Configurator: conf,
+			Monitor:      docker,
 		})
 		if err != nil {
 			log.Error(err)

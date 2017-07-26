@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/nathan-osman/caddy-docker/configurator"
+	"github.com/nathan-osman/caddy-docker/docker"
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,6 +15,7 @@ type Server struct {
 	username     string
 	password     string
 	configurator *configurator.Configurator
+	monitor      *docker.Monitor
 	router       *mux.Router
 	listener     net.Listener
 	log          *logrus.Entry
@@ -33,6 +35,7 @@ func New(cfg *Config) (*Server, error) {
 			username:     cfg.Username,
 			password:     cfg.Password,
 			configurator: cfg.Configurator,
+			monitor:      cfg.Monitor,
 			router:       router,
 			listener:     l,
 			log:          logrus.WithField("context", "server"),

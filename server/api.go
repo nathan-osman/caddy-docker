@@ -6,6 +6,13 @@ import (
 	"strconv"
 )
 
+// makeError creates a map with a single key describing an error condition.
+func makeError(desc string) interface{} {
+	return map[string]interface{}{
+		"error": desc,
+	}
+}
+
 // api provides methods that the UI can utilize.
 func (s *Server) api(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -20,10 +27,17 @@ func (s *Server) api(w http.ResponseWriter, r *http.Request) {
 	switch r.Form.Get("action") {
 	case "getContainers":
 		response = s.configurator.Containers()
-	default:
-		response = map[string]interface{}{
-			"error": "invalid action",
+	case "restartContainer":
+		id := r.Form.Get("id")
+		if len(id) == 0 {
+			response = makeError("container ID is missing")
+		} else if err := s.monitor.Restart(r.Context(), id); err != nil {
+			response = makeError(err.Error())
+		} else {
+			response = map[string]interface{}{}
 		}
+	default:
+		response = makeError("invalid action")
 	}
 	b, err := json.Marshal(response)
 	if err != nil {
