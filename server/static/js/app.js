@@ -20,6 +20,21 @@
      */
     function reloadContainers() {
         $.post('/api', {action: 'getContainers'}, function(d) {
+
+            // Sort the containers by name
+            d = d.sort(function(a, b) {
+                a = a.Name.toUpperCase();
+                b = b.Name.toUpperCase();
+                if (a < b) {
+                    return -1;
+                } if (a > b) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+
+            // Add the containers to the list
             var $tbody = $('#containers tbody').empty();
             $.each(d, function() {
                 $('<tr>')
