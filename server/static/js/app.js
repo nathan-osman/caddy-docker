@@ -34,9 +34,8 @@
         $.post('/api', d, function(d) {
             if ('error' in d) {
                 // TODO: error handling
-            } else {
-                reloadContainers();
             }
+            reloadContainers();
         });
     }
 
