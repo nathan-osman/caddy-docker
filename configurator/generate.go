@@ -23,6 +23,7 @@ func init() {
 # {{$c.Name}}
 {{$c.Domains|join}} {
     proxy / {{$c.Addr}} {
+        gzip
         header_upstream Host {host}
         header_upstream X-Forwarded-For {remote}
         header_upstream X-Forwarded-Host {host}
