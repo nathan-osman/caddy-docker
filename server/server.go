@@ -60,6 +60,11 @@ func New(cfg *Config) (*Server, error) {
 // ServeHTTP ensures that HTTP basic auth credentials match the requires ones
 // and then routes the request to the muxer.
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/ping" {
+		w.Header().Set("Content-Length", "0")
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 	if len(s.username) != 0 && len(s.password) != 0 {
 		u, p, ok := r.BasicAuth()
 		if !ok || u != s.username || p != s.password {
